@@ -1,3 +1,3 @@
-# warehouse_app
+# Warehouse App
 
 Warehouse inventory management application
