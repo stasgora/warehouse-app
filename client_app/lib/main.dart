@@ -1,41 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:warehouse_app/page/login_page.dart';
+import 'package:warehouse_app/page/panel_page.dart';
+
+import 'logic/authentication/authentication_bloc.dart';
+import 'model/app_page.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(BlocProvider<AuthenticationBloc>(
+	  create: (context) => AuthenticationBloc(),
+	  child: WarehouseApp(),
+  ));
 }
 
-class MyApp extends StatelessWidget {
+class WarehouseApp extends StatelessWidget {
+	var _navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Warehouse App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      initialRoute: AppPage.login.name,
+      routes: {
+	      AppPage.login.name: (context) => LoginPage(),
+	      AppPage.panel.name: (context) => PanelPage(),
+      },
+	    builder: _authenticationGateBuilder,
+	    navigatorKey: _navigatorKey,
     );
   }
-}
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Container(),
-    );
+  Widget _authenticationGateBuilder(BuildContext context, Widget child) {
+	  return BlocListener<AuthenticationBloc, AuthenticationState>(
+		  listenWhen: (oldState, newState) => oldState.status != newState.status,
+		  listener: (context, state) {
+			  var redirectPage = state.status == AuthenticationStatus.authenticated ? AppPage.panel : AppPage.login;
+			  _navigatorKey.currentState.pushNamedAndRemoveUntil(redirectPage.name, (route) => false);
+		  },
+		  child: child
+	  );
   }
 }
