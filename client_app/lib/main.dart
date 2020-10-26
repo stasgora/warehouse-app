@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:warehouse_app/logic/item_list/item_list_cubit.dart';
 import 'package:warehouse_app/page/login_page.dart';
 import 'package:warehouse_app/page/panel_page.dart';
+import 'package:warehouse_app/services/service_injection.dart';
 
 import 'logic/authentication/authentication_bloc.dart';
 import 'model/app_page.dart';
 
 void main() {
+	registerServices();
   runApp(BlocProvider<AuthenticationBloc>(
 	  create: (context) => AuthenticationBloc(),
 	  child: WarehouseApp(),
@@ -26,13 +29,22 @@ class WarehouseApp extends StatelessWidget {
       ),
       initialRoute: AppPage.login.name,
       routes: {
-	      AppPage.login.name: (context) => LoginPage(),
-	      AppPage.panel.name: (context) => PanelPage(),
+	      AppPage.login.name: (context) => _createPage(LoginPage(), context),
+	      AppPage.panel.name: (context) => _createPage(PanelPage(), context, ItemListCubit()),
       },
 	    builder: _authenticationGateBuilder,
 	    navigatorKey: _navigatorKey,
     );
   }
+
+	Widget _createPage<CubitType extends Cubit>(Widget page, BuildContext context, [CubitType pageCubit]) {
+		if (pageCubit != null)
+			page = BlocProvider(
+				create: (context) => pageCubit,
+				child: page,
+			);
+		return page;
+	}
 
   Widget _authenticationGateBuilder(BuildContext context, Widget child) {
 	  return BlocListener<AuthenticationBloc, AuthenticationState>(
