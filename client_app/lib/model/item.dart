@@ -1,14 +1,14 @@
 class Item {
-	String name;
+	String model;
 	String manufacturer;
 	int price;
 	int quantity;
 
-	Item({this.name, this.manufacturer, this.price, this.quantity});
+	Item({this.model, this.manufacturer, this.price, this.quantity});
 
 	factory Item.fromJson(Map<String, dynamic> json) {
 		return json != null ? Item(
-			name: json['name'],
+			model: json['model'],
 			manufacturer: json['manufacturer'],
 			price: json['price'],
 			quantity: json['quantity'],
@@ -17,7 +17,7 @@ class Item {
 
 	Map<String, dynamic> toJson() {
 		final Map<String, dynamic> data = {};
-		data['name'] = name;
+		data['model'] = model;
 		data['manufacturer'] = manufacturer;
 		data['price'] = price;
 		data['quantity'] = quantity;

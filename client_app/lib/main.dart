@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:warehouse_app/logic/item_list/item_list_cubit.dart';
@@ -8,7 +9,9 @@ import 'package:warehouse_app/services/service_injection.dart';
 import 'logic/authentication/authentication_bloc.dart';
 import 'model/app_page.dart';
 
-void main() {
+void main() async {
+	WidgetsFlutterBinding.ensureInitialized();
+	await Firebase.initializeApp();
 	registerServices();
   runApp(BlocProvider<AuthenticationBloc>(
 	  create: (context) => AuthenticationBloc(),

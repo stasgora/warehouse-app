@@ -29,7 +29,7 @@ class PanelPage extends StatelessWidget {
 		  	for (var item in items)
 		  		Card(
 					  child: ListTile(
-						  title: Text(item.name),
+						  title: Text(item.model),
 						  subtitle: Text(item.manufacturer),
 						  trailing: IconButton(
 							  icon: Icon(Icons.more_vert),
