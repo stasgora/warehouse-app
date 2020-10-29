@@ -1,7 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:warehouse_app/logic/item_list/item_list_cubit.dart';
+import 'package:warehouse_app/logic/item_list_cubit.dart';
+import 'package:warehouse_app/page/item_page.dart';
 import 'package:warehouse_app/page/login_page.dart';
 import 'package:warehouse_app/page/panel_page.dart';
 import 'package:warehouse_app/services/service_injection.dart';
@@ -12,15 +13,19 @@ import 'model/app_page.dart';
 void main() async {
 	WidgetsFlutterBinding.ensureInitialized();
 	await Firebase.initializeApp();
-	registerServices();
+	var routeObserver = RouteObserver<PageRoute>();
+	registerServices(routeObserver);
   runApp(BlocProvider<AuthenticationBloc>(
 	  create: (context) => AuthenticationBloc(),
-	  child: WarehouseApp(),
+	  child: WarehouseApp(routeObserver),
   ));
 }
 
 class WarehouseApp extends StatelessWidget {
 	var _navigatorKey = GlobalKey<NavigatorState>();
+	var _routeObserver;
+
+  WarehouseApp(this._routeObserver);
 
   @override
   Widget build(BuildContext context) {
@@ -30,15 +35,23 @@ class WarehouseApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: AppPage.login.name,
-      routes: {
-	      AppPage.login.name: (context) => _createPage(LoginPage(), context),
-	      AppPage.panel.name: (context) => _createPage(PanelPage(), context, ItemListCubit()),
-      },
+      initialRoute: AppPage.loginPage.name,
+      routes: _createRoutes(),
 	    builder: _authenticationGateBuilder,
 	    navigatorKey: _navigatorKey,
+	    navigatorObservers: [_routeObserver],
     );
   }
+
+	Map<String, WidgetBuilder> _createRoutes() {
+		var getRoute = (BuildContext context) => ModalRoute.of(context);
+		var getParams = (BuildContext context) => getRoute(context).settings.arguments;
+  	return {
+		  AppPage.loginPage.name: (context) => _createPage(LoginPage(), context),
+		  AppPage.panelPage.name: (context) => _createPage(PanelPage(), context, ItemListCubit(getRoute(context))),
+		  AppPage.itemPage.name: (context) => _createPage(ItemPage(getParams(context)), context),
+	  };
+	}
 
 	Widget _createPage<CubitType extends Cubit>(Widget page, BuildContext context, [CubitType pageCubit]) {
 		if (pageCubit != null)
@@ -53,7 +66,7 @@ class WarehouseApp extends StatelessWidget {
 	  return BlocListener<AuthenticationBloc, AuthenticationState>(
 		  listenWhen: (oldState, newState) => oldState.status != newState.status,
 		  listener: (context, state) {
-			  var redirectPage = state.status == AuthenticationStatus.authenticated ? AppPage.panel : AppPage.login;
+			  var redirectPage = state.status == AuthenticationStatus.authenticated ? AppPage.panelPage : AppPage.loginPage;
 			  _navigatorKey.currentState.pushNamedAndRemoveUntil(redirectPage.name, (route) => false);
 		  },
 		  child: child

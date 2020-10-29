@@ -7,39 +7,40 @@ exports.getItems = functions.https.onRequest(async (req, res) => {
 });
 
 exports.changeQuantity = functions.https.onRequest(async (req, res) => {
-	let item = await getCollection().doc(req.body.data.id);
+	let itemRef = await getCollection().doc(req.body.data.id);
+	let item = await itemRef.get();
 	if (!item.exists)
-		return res.status(404);
-	const quantity = (await item.get()).data.quantity;
-	await item.update({'quantity': quantity + req.body.data.change});
+		return getResponse(res, 404);
+	const quantity = item.data.quantity;
+	await itemRef.update({'quantity': quantity + req.body.data.change});
 	return getResponse(res);
 });
 exports.editItem = functions.https.onRequest(async (req, res) => {
-	let item = await getCollection().doc(req.body.data.id);
-	if (!item.exists)
-		return res.status(404);
+	let itemRef = await getCollection().doc(req.body.data.id);
+	if (!(await itemRef.get()).exists)
+		return getResponse(res, 404);
 	delete req.body.data.id;
-	await item.update(req.body.data);
+	await itemRef.update(req.body.data);
 	return getResponse(res);
 });
 
 exports.createItem = functions.https.onRequest(async (req, res) => {
-	await getCollection().doc().create(req.body.data);
+	await getCollection().add(req.body.data);
 	return getResponse(res);
 });
 exports.removeItem = functions.https.onRequest(async (req, res) => {
-	let item = await getCollection().doc(req.body.data.id);
-	if (!item.exists)
-		return res.status(404);
-	await item.delete();
+	let itemRef = getCollection().doc(req.body.data.id);
+	if (!(await itemRef.get()).exists)
+		return getResponse(res, 404);
+	await itemRef.delete();
 	return getResponse(res);
 });
 
 function getCollection() {
 	return admin.firestore().collection('items');
 }
-function getResponse(res) {
-	return res.status(200).json({'data': {}});
+function getResponse(res, status=200) {
+	return res.status(status).json({'data': {}});
 }
 
 function documentToJson(doc) {
