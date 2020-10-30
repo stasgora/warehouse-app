@@ -8,11 +8,9 @@ exports.getItems = functions.https.onRequest(async (req, res) => {
 
 exports.changeQuantity = functions.https.onRequest(async (req, res) => {
 	let itemRef = await getCollection().doc(req.body.data.id);
-	let item = await itemRef.get();
-	if (!item.exists)
+	if (!(await itemRef.get()).exists)
 		return getResponse(res, 404);
-	const quantity = item.data.quantity;
-	await itemRef.update({'quantity': quantity + req.body.data.change});
+	await itemRef.update({'quantity': admin.firestore.FieldValue.increment(req.body.data.change)});
 	return getResponse(res);
 });
 exports.editItem = functions.https.onRequest(async (req, res) => {

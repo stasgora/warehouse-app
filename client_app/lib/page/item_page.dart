@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:warehouse_app/model/app_page.dart';
 import 'package:warehouse_app/model/ui_item.dart';
+import 'package:warehouse_app/widgets/form_fields.dart';
 
 class ItemPage extends StatefulWidget {
 	final AppFormType mode;
@@ -60,29 +61,33 @@ class _ItemPageState extends State<ItemPage> {
 	  return ListView(
 		  physics: BouncingScrollPhysics(),
       children: [
-			  _buildTextField(
+			  buildTextField(
+				  context: context,
 				  title: 'Model',
 				  icon: Icons.edit,
 				  controller: _modelController,
-				  onChanged: (val) => _item = _item.copyWith(model: val)
+				  onChanged: (val) => setState(() => _item = _item.copyWith(model: val))
 			  ),
-			  _buildTextField(
+			  buildTextField(
+				  context: context,
 				  title: 'Producent',
 				  icon: Icons.home_work,
 				  controller: _manufacturerController,
-				  onChanged: (val) => _item = _item.copyWith(manufacturer: val)
+				  onChanged: (val) => setState(() => _item = _item.copyWith(manufacturer: val))
 			  ),
-	      _buildNumberField(
+	      buildNumberField(
+		      context: context,
 		      title: 'Ilość',
 		      icon: Icons.dynamic_feed,
 		      controller: _quantityController,
-		      onChanged: (val) => _item = _item.copyWith(quantity: val.isNotEmpty ? int.parse(val) : 0)
+		      onChanged: (val) => setState(() => _item = _item.copyWith(quantity: val.isNotEmpty ? int.parse(val) : 0))
 	      ),
-	      _buildNumberField(
+	      buildNumberField(
+		      context: context,
 		      title: 'Cena',
 		      icon: Icons.attach_money,
 		      controller: _priceController,
-		      onChanged: (val) => _item = _item.copyWith(price: val.isNotEmpty ? double.parse(val) : 0),
+		      onChanged: (val) => setState(() => _item = _item.copyWith(price: val.isNotEmpty ? double.parse(val) : 0)),
 		      validator: (val) {
 						if (val.isEmpty)
 							return 'Pole nie może być puste';
@@ -96,52 +101,6 @@ class _ItemPageState extends State<ItemPage> {
 	      ),
 		  ]
 	  );
-  }
-
-  Widget _buildNumberField<T>({String title, IconData icon, TextEditingController controller, Function(String) onChanged, String Function(String) validator, bool decimal = false}) {
-	  validator ??= (_) => null;
-	  return Padding(
-	    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-	    child: TextFormField(
-		  controller: controller,
-		  decoration: _buildDecoration(title, icon).copyWith(
-			  hintText: "0",
-			  suffixIcon: IconButton(
-				  onPressed: () {
-					  FocusScope.of(context).requestFocus(FocusNode());
-					  controller.clear();
-				  },
-				  icon: Icon(Icons.clear)
-			  )
-		  ),
-		  validator: validator,
-		  keyboardType: TextInputType.numberWithOptions(signed: false, decimal: decimal),
-		  inputFormatters: <TextInputFormatter>[decimal ? FilteringTextInputFormatter.allow(RegExp('[0-9.]*')) : FilteringTextInputFormatter.digitsOnly],
-		  onChanged: (val) => setState(() => onChanged(val))
-	    ),
-	  );
-  }
-
-  Widget _buildTextField({String title, IconData icon, TextEditingController controller, Function(String) onChanged}) {
-		return Padding(
-		  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-		  child: TextFormField(
-		  	controller: controller,
-		  	decoration: _buildDecoration(title, icon),
-		  	textCapitalization: TextCapitalization.sentences,
-		  	validator: (value) => value.trim().isEmpty ? 'Pole nie może być puste' : null,
-		  	onChanged: (val) => setState(() => onChanged(val))
-		  ),
-		);
-  }
-
-  InputDecoration _buildDecoration(String title, IconData icon) {
-		return InputDecoration(
-			icon: Padding(padding: EdgeInsets.all(5.0), child: Icon(icon)),
-			border: OutlineInputBorder(),
-			contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
-			labelText: title
-		);
   }
 
   void _onSavePressed() async {
