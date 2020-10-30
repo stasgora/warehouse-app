@@ -6,8 +6,8 @@ import 'package:warehouse_app/page/item_page.dart';
 import 'package:warehouse_app/page/login_page.dart';
 import 'package:warehouse_app/page/panel_page.dart';
 import 'package:warehouse_app/services/service_injection.dart';
-
-import 'logic/authentication/authentication_bloc.dart';
+import 'logic/authentication/bloc/authentication_bloc.dart';
+import 'logic/authentication/sign_in/sign_in_cubit.dart';
 import 'model/app_page.dart';
 
 void main() async {
@@ -22,8 +22,8 @@ void main() async {
 }
 
 class WarehouseApp extends StatelessWidget {
-	var _navigatorKey = GlobalKey<NavigatorState>();
-	var _routeObserver;
+	final _navigatorKey = GlobalKey<NavigatorState>();
+	final _routeObserver;
 
   WarehouseApp(this._routeObserver);
 
@@ -47,7 +47,7 @@ class WarehouseApp extends StatelessWidget {
 		var getRoute = (BuildContext context) => ModalRoute.of(context);
 		var getParams = (BuildContext context) => getRoute(context).settings.arguments;
   	return {
-		  AppPage.loginPage.name: (context) => _createPage(LoginPage(), context),
+		  AppPage.loginPage.name: (context) => _createPage(LoginPage(), context, SignInCubit()),
 		  AppPage.panelPage.name: (context) => _createPage(PanelPage(), context, ItemListCubit(getRoute(context))),
 		  AppPage.itemPage.name: (context) => _createPage(ItemPage(getParams(context)), context),
 	  };

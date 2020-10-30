@@ -22,15 +22,7 @@ class UIButton {
 
 extension TextButtonType on ButtonType {
 	String get key => const {
-		ButtonType.exit: 'actions.exit',
-		ButtonType.ok: 'actions.ok',
-		ButtonType.retry: 'actions.retry',
-		ButtonType.close: 'actions.close',
-		ButtonType.details: 'actions.details',
-		ButtonType.edit: 'actions.edit',
-		ButtonType.delete: 'actions.delete',
-		ButtonType.unpair: 'actions.unpair',
-		ButtonType.signIn: 'actions.signIn',
-		ButtonType.signUp: 'actions.signUp'
+		ButtonType.signIn: 'Zaloguj',
+		ButtonType.signUp: 'Załóż konto'
 	}[this];
 }
