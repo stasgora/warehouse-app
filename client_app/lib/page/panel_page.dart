@@ -48,7 +48,7 @@ class PanelPage extends StatelessWidget {
 		  		Card(
 					  child: ListTile(
 						  title: Text(item.model, maxLines: 1, overflow: TextOverflow.ellipsis),
-						  subtitle: Text(item.manufacturer, maxLines: 1, overflow: TextOverflow.ellipsis),
+						  subtitle: Text('Producent: ${item.manufacturer}', maxLines: 1, overflow: TextOverflow.ellipsis),
 						  trailing: PopupMenuList(
 							  items: [
 								  UIButton('Edytuj', () => pushItemPage(context, item), null, Icons.edit),
