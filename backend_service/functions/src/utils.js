@@ -1,15 +1,17 @@
 const admin = require("firebase-admin");
+const functions = require("firebase-functions");
 
 exports.getCollection = function getCollection(name) {
 	return admin.firestore().collection(name);
-}
-
-exports.getResponse = function getResponse(res, status=200) {
-	return res.status(status).json({'data': {}});
 }
 
 exports.documentToJson = function documentToJson(doc) {
 	let json = doc.data();
 	json['id'] = doc.id;
 	return json;
+}
+
+exports.checkAuth = function checkAuth(context) {
+	if (!context.auth)
+		throw new functions.https.HttpsError('unauthenticated', 'Authentication Required');
 }
