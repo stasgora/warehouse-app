@@ -5,11 +5,9 @@ class AuthenticatedUser extends Equatable {
 	final String name;
 	final String email;
 	final String id;
-	final String photoURL;
 	final AuthMethod authMethod;
-	final bool emailVerified;
 
-	const AuthenticatedUser({@required this.id, @required this.email, @required this.name, @required this.authMethod, this.photoURL, this.emailVerified});
+	const AuthenticatedUser({@required this.id, @required this.email, @required this.name, @required this.authMethod});
 
 	static const empty = AuthenticatedUser(id: '', name: '', email: '', authMethod: null);
 

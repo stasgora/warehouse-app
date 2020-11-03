@@ -13,6 +13,13 @@ class EmailSignUpFailure implements Exception {
   EmailSignUpFailure({this.reason});
 }
 
+extension EmailSignUpErrorTextKey on EmailSignUpError {
+	String get key => const {
+		EmailSignUpError.emailAlreadyUsed: 'Adres e-mail jest już zajęty',
+		EmailSignUpError.emailInvalid: 'Adres e-mail jest nieprawidłowy',
+	}[this];
+}
+
 enum EmailSignInError { wrongPassword, userNotFound, userDisabled }
 
 extension EmailSignInErrorCode on EmailSignInError {
@@ -29,18 +36,12 @@ class EmailSignInFailure implements Exception {
   EmailSignInFailure({this.reason});
 }
 
-enum PasswordConfirmError { wrongPassword }
-
-extension PasswordChangeErrorCode on PasswordConfirmError {
-	String get errorCode => const {
-		PasswordConfirmError.wrongPassword: 'wrong-password',
+extension EmailSignInErrorTextKey on EmailSignInError {
+	String get key => const {
+		EmailSignInError.wrongPassword: 'Nieprawidłowy e-mail lub hasło',
+		EmailSignInError.userNotFound: 'Nieprawidłowy e-mail lub hasło',
+		EmailSignInError.userDisabled: 'Użytkownik został wyłączony',
 	}[this];
-}
-
-class PasswordConfirmFailure {
-	final PasswordConfirmError reason;
-
-	PasswordConfirmFailure({this.reason});
 }
 
 class GoogleSignInFailure implements Exception {}

@@ -70,17 +70,7 @@ class FirebaseAuthProvider implements AuthenticationProvider {
 	}
 
 	@override
-	Future<void> changePassword(String currentPassword, String newPassword) async {
-		return _executeAuthenticated(() => _firebaseAuth.currentUser.updatePassword(newPassword), currentPassword);
-	}
-
-	@override
 	Future<bool> userExists(String email) async => (await _firebaseAuth.fetchSignInMethodsForEmail(email)).isNotEmpty;
-
-	@override
-	Future<void> deleteAccount(String currentPassword) {
-		return _executeAuthenticated(() => _firebaseAuth.currentUser.delete(), currentPassword);
-	}
 
 	@override
 	Future<void> signOut() async {
@@ -96,33 +86,6 @@ class FirebaseAuthProvider implements AuthenticationProvider {
 
 	@override
 	Future<void> changeName(String name) => _firebaseAuth.currentUser.updateProfile(displayName: name);
-
-	@override
-	Future<void> confirmPassword(String currentPassword) => _executeAuthenticated(() {}, currentPassword);
-
-	Future<void> _executeAuthenticated(Function action, String currentPassword) async {
-		if (_firebaseAuth.currentUser == null)
-			return;
-		var credentials = _getUserAuthMethod() == AuthMethod.GOOGLE ? await _getGoogleCredential() :
-				EmailAuthProvider.credential(email: _firebaseAuth.currentUser.email, password: currentPassword);
-		if (credentials == null)
-			return;
-		try {
-			await _firebaseAuth.currentUser.reauthenticateWithCredential(credentials);
-			return action();
-		} catch (e) {
-			PasswordConfirmError reason;
-			if (e is FirebaseAuthException)
-				for (var error in PasswordConfirmError.values)
-					if (e.code == error.errorCode) {
-						reason = error;
-						break;
-					}
-			if (reason == null)
-				_logException('Change password', e);
-			throw PasswordConfirmFailure(reason: reason);
-		}
-	}
 
 	Future<AuthCredential> _getGoogleCredential() async {
 		final googleUser = await _googleSignIn.signIn();
@@ -160,10 +123,8 @@ class FirebaseAuthProvider implements AuthenticationProvider {
 	  var authUser = AuthenticatedUser(
 		  id: user.uid,
 		  email: user.email,
-		  photoURL: user.photoURL,
 		  name: user.displayName ?? signedUpUserName,
-		  authMethod: _getUserAuthMethod(),
-		  emailVerified: user.emailVerified
+		  authMethod: _getUserAuthMethod()
 	  );
 	  signedUpUserName = null;
 	  return authUser;

@@ -1,10 +1,12 @@
 enum AppPage {
-  loginPage, panelPage, itemPage
+  loadingPage, signInPage, signUpPage, panelPage, itemPage
 }
 
 extension AppPageName on AppPage {
 	String get name => const {
-		AppPage.loginPage: '/login',
+		AppPage.loadingPage: '/loading',
+		AppPage.signInPage: '/signIn',
+		AppPage.signUpPage: '/signUp',
 		AppPage.panelPage: '/panel',
 		AppPage.itemPage: '/item',
 	}[this];

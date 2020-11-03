@@ -14,9 +14,6 @@ abstract class AuthenticationProvider {
 	Future<void> signOut();
 
 	Future<bool> userExists(String email);
-	Future<void> confirmPassword(String currentPassword);
-	Future<void> deleteAccount(String currentPassword);
 
-	Future<void> changePassword(String currentPassword, String newPassword);
 	Future<void> changeName(String name);
 }

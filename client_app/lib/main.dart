@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:warehouse_app/logic/item_list_cubit.dart';
 import 'package:warehouse_app/page/item_page.dart';
-import 'package:warehouse_app/page/login_page.dart';
+import 'package:warehouse_app/page/loading_page.dart';
+import 'package:warehouse_app/page/sign_in_page.dart';
 import 'package:warehouse_app/page/panel_page.dart';
+import 'package:warehouse_app/page/sign_up_page.dart';
 import 'package:warehouse_app/services/service_injection.dart';
 import 'logic/authentication/bloc/authentication_bloc.dart';
 import 'logic/authentication/sign_in/sign_in_cubit.dart';
+import 'logic/authentication/sign_up/sign_up_cubit.dart';
 import 'model/app_page.dart';
 
 void main() async {
@@ -35,7 +38,7 @@ class WarehouseApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: AppPage.loginPage.name,
+      initialRoute: AppPage.loadingPage.name,
       routes: _createRoutes(),
 	    builder: _authenticationGateBuilder,
 	    navigatorKey: _navigatorKey,
@@ -47,7 +50,9 @@ class WarehouseApp extends StatelessWidget {
 		var getRoute = (BuildContext context) => ModalRoute.of(context);
 		var getParams = (BuildContext context) => getRoute(context).settings.arguments;
   	return {
-		  AppPage.loginPage.name: (context) => _createPage(LoginPage(), context, SignInCubit()),
+		  AppPage.loadingPage.name: (context) => _createPage(LoadingPage(), context),
+		  AppPage.signInPage.name: (context) => _createPage(SignInPage(), context, SignInCubit()),
+		  AppPage.signUpPage.name: (context) => _createPage(SignUpPage(), context, SignUpCubit()),
 		  AppPage.panelPage.name: (context) => _createPage(PanelPage(), context, ItemListCubit(getRoute(context))),
 		  AppPage.itemPage.name: (context) => _createPage(ItemPage(getParams(context)), context),
 	  };
@@ -66,7 +71,7 @@ class WarehouseApp extends StatelessWidget {
 	  return BlocListener<AuthenticationBloc, AuthenticationState>(
 		  listenWhen: (oldState, newState) => oldState.status != newState.status,
 		  listener: (context, state) {
-			  var redirectPage = state.status == AuthenticationStatus.authenticated ? AppPage.panelPage : AppPage.loginPage;
+			  var redirectPage = state.status == AuthenticationStatus.authenticated ? AppPage.panelPage : AppPage.signInPage;
 			  _navigatorKey.currentState.pushNamedAndRemoveUntil(redirectPage.name, (route) => false);
 		  },
 		  child: child

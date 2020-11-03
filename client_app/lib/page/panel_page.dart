@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:warehouse_app/logic/authentication/bloc/authentication_bloc.dart';
 
 import 'package:warehouse_app/logic/item_list_cubit.dart';
 import 'package:warehouse_app/model/app_page.dart';
 import 'package:warehouse_app/model/ui_button.dart';
 import 'package:warehouse_app/model/ui_item.dart';
+import 'package:warehouse_app/model/user_role.dart';
 import 'package:warehouse_app/widgets/app_dialog.dart';
 import 'package:warehouse_app/widgets/form_fields.dart';
 import 'package:warehouse_app/widgets/loadable_bloc_builder.dart';
@@ -16,6 +18,12 @@ class PanelPage extends StatelessWidget {
     return Scaffold(
 	    appBar: AppBar(
 		    title: Text('Panel'),
+		    actions: [
+		    	IconButton(
+				    icon: Icon(Icons.logout),
+				    onPressed: () => context.bloc<AuthenticationBloc>().add(AuthenticationSignOutRequested())
+			    )
+		    ],
 	    ),
 	    body: LoadableBlocBuilder<ItemListCubit>(
 			  builder: (context, state) => _buildItemList((state as ItemListLoadSuccess).items, context)
@@ -54,7 +62,8 @@ class PanelPage extends StatelessWidget {
 								  UIButton('Edytuj', () => pushItemPage(context, item), null, Icons.edit),
 								  UIButton('Zwiększ ilość', () => showQuantityDialog(item, context, adding: true), null, Icons.add),
 								  UIButton('Zmniejsz ilość', () => showQuantityDialog(item, context, adding: false), null, Icons.remove),
-								  UIButton('Usuń', () => context.bloc<ItemListCubit>().removeItem(item), null, Icons.delete),
+								  if (context.bloc<AuthenticationBloc>().state.user.role == UserRole.manager)
+								    UIButton('Usuń', () => context.bloc<ItemListCubit>().removeItem(item), null, Icons.delete),
 							  ],
 						  ),
 					  ),

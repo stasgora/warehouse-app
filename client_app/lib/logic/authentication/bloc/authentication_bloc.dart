@@ -2,18 +2,54 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:get_it/get_it.dart';
 import 'package:warehouse_app/model/user.dart';
-import 'package:warehouse_app/model/user_role.dart';
+import 'package:warehouse_app/services/auth/auth_provider.dart';
+import 'package:warehouse_app/services/auth/auth_user.dart';
+import 'package:warehouse_app/services/backend_service.dart';
 
 part 'authentication_event.dart';
 part 'authentication_state.dart';
 
 class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
-  AuthenticationBloc() : super(AuthenticationState.unknown());
+	final AuthenticationProvider _authenticationProvider = GetIt.I<AuthenticationProvider>();
+	final BackendService _backendService = GetIt.I<BackendService>();
+
+	StreamSubscription<AuthenticatedUser> _userSubscription;
+
+  AuthenticationBloc() : super(AuthenticationState.unknown()) {
+	  _userSubscription = _authenticationProvider.user.listen((user) => add(AuthenticationUserChanged(user)));
+  }
 
   @override
   Stream<AuthenticationState> mapEventToState(AuthenticationEvent event) async* {
-		if (event is AuthenticationStarted)
-			yield AuthenticationState.authenticated(User(id: '0', name: 'Test', role: UserRole.manager));
+	  if (event is AuthenticationUserChanged)
+		  yield await _processUserChangedEvent(event);
+	  else if (event is AuthenticationSignOutRequested)
+		  _authenticationProvider.signOut();
   }
+
+	Future<AuthenticationState> _processUserChangedEvent(AuthenticationUserChanged event) async {
+		User user;
+		if (event.user == AuthenticatedUser.empty)
+			return const AuthenticationState.unauthenticated();
+
+		user = await _backendService.getUser(event.user.id);
+		if (user == null) {
+			if (! (await _authenticationProvider.userExists(event.user.email))) {
+				await _authenticationProvider.signOut();
+				return const AuthenticationState.unauthenticated();
+			}
+			print('Creating new user for ${event.user}');
+			user = User.fromAuthUser(event.user);
+			await _backendService.createUser(user);
+		}
+		return AuthenticationState.authenticated(user);
+	}
+
+	@override
+	Future<void> close() {
+		_userSubscription?.cancel();
+		return super.close();
+	}
 }
