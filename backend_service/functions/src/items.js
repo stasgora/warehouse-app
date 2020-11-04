@@ -14,8 +14,13 @@ exports.changeQuantity = functions.https.onCall(async (data, context) => {
 	let itemRef = await utils.getCollection('items').doc(data.id);
 	if (!(await itemRef.get()).exists)
 		throw new functions.https.HttpsError('not-found', 'No matching item found');
-	await itemRef.update({'quantity': admin.firestore.FieldValue.increment(data.change)});
-	return {};
+	let newQuantity;
+	await admin.firestore().runTransaction(async (t) => {
+		const item = await t.get(itemRef);
+		newQuantity = Math.max(0, item.data().quantity + data.change);
+		t.update(itemRef, {'quantity': newQuantity});
+	});
+	return newQuantity;
 });
 exports.edit = functions.https.onCall(async (data, context) => {
 	utils.checkAuth(context);
