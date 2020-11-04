@@ -32,7 +32,7 @@ class _ItemPageState extends State<ItemPage> {
 		_modelController.text = _item.model;
 		_manufacturerController.text = _item.manufacturer;
 		_quantityController.text = '${_item.quantity}';
-		_priceController.text = '${_item.price ?? ''}';
+		_priceController.text = '${_item.price?.toStringAsFixed(2) ?? ''}';
   }
 
   @override

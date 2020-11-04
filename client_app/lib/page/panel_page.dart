@@ -21,7 +21,8 @@ class PanelPage extends StatelessWidget {
 		    actions: [
 		    	IconButton(
 				    icon: Icon(Icons.logout),
-				    onPressed: () => context.bloc<AuthenticationBloc>().add(AuthenticationSignOutRequested())
+				    onPressed: () => context.bloc<AuthenticationBloc>().add(AuthenticationSignOutRequested()),
+	          tooltip: 'Wyloguj: ${context.bloc<AuthenticationBloc>().state.user.name}',
 			    )
 		    ],
 	    ),
@@ -55,13 +56,14 @@ class PanelPage extends StatelessWidget {
 		  	for (var item in items)
 		  		Card(
 					  child: ListTile(
-						  title: Text(item.model, maxLines: 1, overflow: TextOverflow.ellipsis),
-						  subtitle: Text('Producent: ${item.manufacturer}', maxLines: 1, overflow: TextOverflow.ellipsis),
+						  title: Text('${item.manufacturer} ${item.model}', maxLines: 1, overflow: TextOverflow.ellipsis),
+						  subtitle: Text('Ilość: ${item.quantity}　Cena: ${item.price.toStringAsFixed(2)}', maxLines: 2, overflow: TextOverflow.ellipsis),
 						  trailing: PopupMenuList(
 							  items: [
 								  UIButton('Edytuj', () => pushItemPage(context, item), null, Icons.edit),
 								  UIButton('Zwiększ ilość', () => showQuantityDialog(item, context, adding: true), null, Icons.add),
-								  UIButton('Zmniejsz ilość', () => showQuantityDialog(item, context, adding: false), null, Icons.remove),
+								  if (item.quantity > 0)
+								    UIButton('Zmniejsz ilość', () => showQuantityDialog(item, context, adding: false), null, Icons.remove),
 								  if (context.bloc<AuthenticationBloc>().state.user.role == UserRole.manager)
 								    UIButton('Usuń', () => context.bloc<ItemListCubit>().removeItem(item), null, Icons.delete),
 							  ],
@@ -89,7 +91,7 @@ class PanelPage extends StatelessWidget {
 				  )
 			  ],
 			  onConfirm: () async {
-			    await context.bloc<ItemListCubit>().changeItemQuantity(item.id, (adding ? 1 : -1) * quantity);
+			    await context.bloc<ItemListCubit>().changeItemQuantity(item, (adding ? 1 : -1) * quantity);
 			    Navigator.of(ctx).pop();
 			  },
 		  ),

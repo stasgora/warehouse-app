@@ -8,7 +8,7 @@ class BackendService {
 
 	Future<List<Item>> fetchItems() async => (await _executeItem('getAll') as List).map((element) => Item.fromJson(Map.from(element))).toList();
 
-	Future changeQuantity(String id, int quantityChange) => _executeItem('changeQuantity', {'id': id, 'change': quantityChange});
+	Future<int> changeQuantity(String id, int quantityChange) async => await _executeItem('changeQuantity', {'id': id, 'change': quantityChange});
 	Future editItem(Item item) => _executeItem('edit', {'item': item.toJson()});
 
 	Future createItem(Item item) => _executeItem('create', {'item': item.toJson()});

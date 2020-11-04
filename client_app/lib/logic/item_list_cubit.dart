@@ -18,7 +18,13 @@ class ItemListCubit extends ReloadableCubit {
 
 	Future createItem(UIItem item) => _backendConnector.createItem(Item.fromUIModel(item));
 	Future editItem(UIItem item) => _backendConnector.editItem(Item.fromUIModel(item));
-	Future changeItemQuantity(String id, int quantityChange) => _backendConnector.changeQuantity(id, quantityChange);
+
+	Future changeItemQuantity(UIItem item, int quantityChange) async {
+	  var quantity = await _backendConnector.changeQuantity(item.id, quantityChange);
+	  var newList = List.of((state as ItemListLoadSuccess).items);
+	  newList[newList.indexOf(item)] = item.copyWith(quantity: quantity);
+	  emit(ItemListLoadSuccess(newList));
+	}
 
 	Future removeItem(UIItem item) async {
 	  await _backendConnector.removeItem(item.id);
