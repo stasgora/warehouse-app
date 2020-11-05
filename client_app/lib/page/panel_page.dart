@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:warehouse_app/logic/authentication/bloc/authentication_bloc.dart';
 
 import 'package:warehouse_app/logic/item_list_cubit.dart';
+import 'package:warehouse_app/logic/reloadable/reloadable_cubit.dart';
 import 'package:warehouse_app/model/app_page.dart';
 import 'package:warehouse_app/model/ui_button.dart';
+import 'package:warehouse_app/services/exceptions.dart';
 import 'package:warehouse_app/model/ui_item.dart';
 import 'package:warehouse_app/model/user_role.dart';
 import 'package:warehouse_app/widgets/app_dialog.dart';
@@ -16,23 +18,33 @@ class PanelPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-	    appBar: AppBar(
+		  appBar: AppBar(
 		    title: Text('Panel'),
 		    actions: [
-		    	IconButton(
+		      IconButton(
 				    icon: Icon(Icons.logout),
 				    onPressed: () => context.bloc<AuthenticationBloc>().add(AuthenticationSignOutRequested()),
-	          tooltip: 'Wyloguj: ${context.bloc<AuthenticationBloc>().state.user.name}',
+		        tooltip: 'Wyloguj: ${context.bloc<AuthenticationBloc>().state.user.name}',
 			    )
 		    ],
-	    ),
-	    body: LoadableBlocBuilder<ItemListCubit>(
-			  builder: (context, state) => _buildItemList((state as ItemListLoadSuccess).items, context)
-	    ),
-	    floatingActionButton: FloatingActionButton(
+		  ),
+		  body: BlocListener<ItemListCubit, LoadableState>(
+			  listenWhen: (oldState, newState) => newState is ItemListLoadSuccess,
+			  listener: (context, state) {
+				  var error = (state as ItemListLoadSuccess).exception;
+				  if (error != null)
+					  Scaffold.of(context)..hideCurrentSnackBar()..showSnackBar(
+						  SnackBar(content: Text(error.description)),
+					  );
+			  },
+			  child: LoadableBlocBuilder<ItemListCubit>(
+				  builder: (context, state) => _buildItemList((state as ItemListLoadSuccess).items, context)
+			  ),
+		  ),
+		  floatingActionButton: FloatingActionButton(
 		    child: Icon(Icons.add),
 		    onPressed: () => pushItemPage(context),
-	    ),
+		  ),
     );
   }
 
@@ -85,6 +97,7 @@ class PanelPage extends StatelessWidget {
 				  buildNumberField(
 					  context: ctx,
 					  title: 'Zmiana',
+					  focus: true,
 					  icon: Icons.dynamic_feed,
 					  controller: _quantityController,
 					  onChanged: (val) => quantity = val.isNotEmpty ? int.parse(val) : 0,

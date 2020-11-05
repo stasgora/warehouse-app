@@ -15,3 +15,10 @@ exports.checkAuth = function checkAuth(context) {
 	if (!context.auth)
 		throw new functions.https.HttpsError('unauthenticated', 'Authentication Required');
 }
+
+exports.getUser = async function getUser(authId) {
+	let query = await (exports.getCollection('users').where('authId', '==', authId).get());
+	if (query.size === 0)
+		return {};
+	return query.docs[0];
+}

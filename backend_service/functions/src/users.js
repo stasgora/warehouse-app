@@ -4,10 +4,7 @@ const utils = require("./utils");
 
 exports.get = functions.https.onCall(async (data, context) => {
 	utils.checkAuth(context);
-	let query = await utils.getCollection('users').where('authId', '==', data.authId).get();
-	if (query.size === 0)
-		return {};
-	return utils.documentToJson(query.docs[0]);
+	return utils.documentToJson(await utils.getUser(data.authId));
 });
 
 exports.create = functions.https.onCall(async (data, context) => {

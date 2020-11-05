@@ -2,6 +2,10 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const utils = require("./utils");
 
+var UserRole = {
+	Manager: 0,
+	Employee: 1
+}
 
 exports.getAll = functions.https.onCall(async (data, context) => {
 	utils.checkAuth(context);
@@ -17,7 +21,9 @@ exports.changeQuantity = functions.https.onCall(async (data, context) => {
 	let newQuantity;
 	await admin.firestore().runTransaction(async (t) => {
 		const item = await t.get(itemRef);
-		newQuantity = Math.max(0, item.data().quantity + data.change);
+		if (item.data().quantity + data.change <= 0)
+			throw new functions.https.HttpsError('resource-exhausted', 'There is not enough in stock');
+		newQuantity = item.data().quantity + data.change;
 		t.update(itemRef, {'quantity': newQuantity});
 	});
 	return newQuantity;
@@ -40,6 +46,9 @@ exports.create = functions.https.onCall(async (data, context) => {
 });
 exports.remove = functions.https.onCall(async (data, context) => {
 	utils.checkAuth(context);
+	const user = await utils.getUser(context.auth.uid);
+	if (user.data().role === UserRole.Employee)
+		throw new functions.https.HttpsError('permission-denied', 'Employees can not remove items');
 	let itemRef = utils.getCollection('items').doc(data.id);
 	if (!(await itemRef.get()).exists)
 		throw new functions.https.HttpsError('not-found', 'No matching item found');

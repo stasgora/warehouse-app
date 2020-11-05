@@ -1,6 +1,8 @@
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/services.dart';
 import 'package:warehouse_app/model/item.dart';
 import 'package:warehouse_app/model/user.dart';
+import 'package:warehouse_app/services/exceptions.dart';
 
 class BackendService {
 	var _api = CloudFunctions.instance.useFunctionsEmulator(origin: 'http://10.0.2.2:5521');
@@ -23,6 +25,14 @@ class BackendService {
 	Future<dynamic> _execute(String function, String category, [Map<String, dynamic> args]) async {
 		args ??= {};
 		args['apiVersion'] = _apiVersion;
-		return (await _api.getHttpsCallable(functionName: '$category-$function').call(args)).data;
+		try {
+			return (await _api.getHttpsCallable(functionName: '$category-$function').call(args)).data;
+		} on PlatformException catch(e) {
+			for (var error in BackendException.values) {
+				if (e.details['code'] == error.code)
+					throw error;
+			}
+			throw e;
+		}
 	}
 }
