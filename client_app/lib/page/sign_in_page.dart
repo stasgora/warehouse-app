@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 
 import 'package:warehouse_app/logic/authentication/sign_in/sign_in_cubit.dart';
-import 'package:warehouse_app/model/app_page.dart';
-import 'package:warehouse_app/model/ui_button.dart';
+import 'package:warehouse_app/model/ui/app_page.dart';
+import 'package:warehouse_app/model/ui/ui_button.dart';
 import 'package:warehouse_app/widgets/auth/auth_button.dart';
 import 'package:warehouse_app/services/auth/auth_exceptions.dart';
 import 'package:warehouse_app/model/auth/email.dart';

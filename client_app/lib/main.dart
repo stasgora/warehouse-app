@@ -11,7 +11,7 @@ import 'package:warehouse_app/services/service_injection.dart';
 import 'logic/authentication/bloc/authentication_bloc.dart';
 import 'logic/authentication/sign_in/sign_in_cubit.dart';
 import 'logic/authentication/sign_up/sign_up_cubit.dart';
-import 'model/app_page.dart';
+import 'model/ui/app_page.dart';
 
 void main() async {
 	WidgetsFlutterBinding.ensureInitialized();

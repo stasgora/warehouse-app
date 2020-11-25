@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import 'item.dart';
+import '../db/item.dart';
 
 class UIItem extends Equatable {
 	final String id;

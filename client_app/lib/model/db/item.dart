@@ -1,4 +1,6 @@
-import 'package:warehouse_app/model/ui_item.dart';
+import 'package:warehouse_app/model/ui/ui_item.dart';
+
+import '../json_convertible.dart';
 
 class Item {
 	String id;

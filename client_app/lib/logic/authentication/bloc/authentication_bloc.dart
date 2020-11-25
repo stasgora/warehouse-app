@@ -3,17 +3,17 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:get_it/get_it.dart';
-import 'package:warehouse_app/model/user.dart';
+import 'package:warehouse_app/model/db/user.dart';
 import 'package:warehouse_app/services/auth/auth_provider.dart';
 import 'package:warehouse_app/services/auth/auth_user.dart';
-import 'package:warehouse_app/services/backend_service.dart';
+import 'package:warehouse_app/services/data/data_service.dart';
 
 part 'authentication_event.dart';
 part 'authentication_state.dart';
 
 class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
 	final AuthenticationProvider _authenticationProvider = GetIt.I<AuthenticationProvider>();
-	final BackendService _backendService = GetIt.I<BackendService>();
+	final DataService _dataService = GetIt.I<DataService>();
 
 	StreamSubscription<AuthenticatedUser> _userSubscription;
 
@@ -34,7 +34,7 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
 		if (event.user == AuthenticatedUser.empty)
 			return const AuthenticationState.unauthenticated();
 
-		user = await _backendService.getUser(event.user.id);
+		user = await _dataService.getUser(event.user.id);
 		if (user == null) {
 			if (! (await _authenticationProvider.userExists(event.user.email))) {
 				await _authenticationProvider.signOut();
@@ -42,7 +42,7 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
 			}
 			print('Creating new user for ${event.user}');
 			user = User.fromAuthUser(event.user);
-			await _backendService.createUser(user);
+			await _dataService.createUser(user);
 		}
 		return AuthenticationState.authenticated(user);
 	}

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:warehouse_app/model/user_role.dart';
+import 'package:warehouse_app/model/ui/user_role.dart';
 import 'package:warehouse_app/services/auth/auth_user.dart';
 
 class User extends Equatable {

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 
 import 'package:warehouse_app/logic/authentication/sign_up/sign_up_cubit.dart';
-import 'package:warehouse_app/model/ui_button.dart';
+import 'package:warehouse_app/model/ui/ui_button.dart';
 import 'package:warehouse_app/widgets/auth/auth_button.dart';
 import 'package:warehouse_app/widgets/auth/auth_input_field.dart';
 import 'package:warehouse_app/widgets/auth/auth_widgets.dart';

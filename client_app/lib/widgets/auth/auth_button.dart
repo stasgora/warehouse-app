@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:warehouse_app/model/ui_button.dart';
+import 'package:warehouse_app/model/ui/ui_button.dart';
 
 class AuthButton extends StatelessWidget {
 	final UIButton button;

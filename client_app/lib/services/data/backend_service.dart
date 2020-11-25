@@ -1,22 +1,31 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/services.dart';
-import 'package:warehouse_app/model/item.dart';
-import 'package:warehouse_app/model/user.dart';
+import 'package:warehouse_app/model/db/item.dart';
+import 'package:warehouse_app/model/db/user.dart';
 import 'package:warehouse_app/services/exceptions.dart';
 
-class BackendService {
+import 'data_service.dart';
+
+class BackendService implements DataService {
 	var _api = CloudFunctions.instance.useFunctionsEmulator(origin: 'http://10.0.2.2:5521');
 	var _apiVersion = 1.0;
 
+	@override
 	Future<List<Item>> fetchItems() async => (await _executeItem('getAll') as List).map((element) => Item.fromJson(Map.from(element))).toList();
 
+	@override
 	Future<int> changeQuantity(String id, int quantityChange) async => await _executeItem('changeQuantity', {'id': id, 'change': quantityChange});
+	@override
 	Future editItem(Item item) => _executeItem('edit', {'item': item.toJson()});
 
+	@override
 	Future createItem(Item item) => _executeItem('create', {'item': item.toJson()});
+	@override
 	Future removeItem(String id) => _executeItem('remove', {'id': id});
 
+	@override
 	Future<User> getUser(String authId) async => User.fromJson((await _executeUser('get', {'authId': authId})));
+	@override
 	Future createUser(User user) => _executeUser('create', {'user': user.toJson()});
 
 	Future<dynamic> _executeItem(String function, [Map<String, dynamic> args]) => _execute(function, 'items', args);

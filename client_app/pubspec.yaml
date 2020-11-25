@@ -21,6 +21,7 @@ dependencies:
   equatable: ^1.2.5
   get_it: ^5.0.1
   formz: ^0.3.0
+  path_provider: ^1.6.24
 
   cupertino_icons: ^1.0.0
 

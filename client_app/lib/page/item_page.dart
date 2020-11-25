@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:warehouse_app/model/app_page.dart';
-import 'package:warehouse_app/model/ui_item.dart';
+import 'package:warehouse_app/model/ui/app_page.dart';
+import 'package:warehouse_app/model/ui/ui_item.dart';
 import 'package:warehouse_app/widgets/form_fields.dart';
 
 class ItemPage extends StatefulWidget {

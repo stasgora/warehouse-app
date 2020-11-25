@@ -4,11 +4,11 @@ import 'package:warehouse_app/logic/authentication/bloc/authentication_bloc.dart
 
 import 'package:warehouse_app/logic/item_list_cubit.dart';
 import 'package:warehouse_app/logic/reloadable/reloadable_cubit.dart';
-import 'package:warehouse_app/model/app_page.dart';
-import 'package:warehouse_app/model/ui_button.dart';
+import 'package:warehouse_app/model/ui/app_page.dart';
+import 'package:warehouse_app/model/ui/ui_button.dart';
 import 'package:warehouse_app/services/exceptions.dart';
-import 'package:warehouse_app/model/ui_item.dart';
-import 'package:warehouse_app/model/user_role.dart';
+import 'package:warehouse_app/model/ui/ui_item.dart';
+import 'package:warehouse_app/model/ui/user_role.dart';
 import 'package:warehouse_app/widgets/app_dialog.dart';
 import 'package:warehouse_app/widgets/form_fields.dart';
 import 'package:warehouse_app/widgets/loadable_bloc_builder.dart';
