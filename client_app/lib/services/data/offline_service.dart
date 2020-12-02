@@ -22,11 +22,17 @@ class OfflineService implements DataService {
   @override
   Future removeItem(String id) => _storageService.execute((model) => model.items.remove(id));
 
+  Future refreshItems(List<Item> items) {
+    return _storageService.execute((model) => model.items..clear()..addEntries(items.map((e) => MapEntry(e.id, e))));
+  }
+
 	@override
 	Future<User> getUser(String authId) {
+		throw UnsupportedError('Offline caching does not support users');
 	}
 
 	@override
 	Future createUser(User user) {
+		throw UnsupportedError('Offline caching does not support users');
 	}
 }

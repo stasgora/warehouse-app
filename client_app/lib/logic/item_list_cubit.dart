@@ -3,18 +3,20 @@ import 'package:get_it/get_it.dart';
 import 'package:warehouse_app/logic/reloadable/reloadable_cubit.dart';
 import 'package:warehouse_app/model/db/item.dart';
 import 'package:warehouse_app/model/ui/ui_item.dart';
+import 'package:warehouse_app/services/connectivity_service.dart';
 import 'package:warehouse_app/services/data/data_service.dart';
 import 'package:warehouse_app/services/exceptions.dart';
 
 class ItemListCubit extends ReloadableCubit {
 	final DataService _dataService = GetIt.I<DataService>();
+	final _connectivityService = GetIt.I<ConnectivityService>();
 
   ItemListCubit(ModalRoute<Object> modalRoute) : super(modalRoute);
 
   @override
   Future doLoadData() async {
   	var items = (await _dataService.fetchItems()).map((item) => UIItem.fromDBModel(item)).toList();
-  	emit(ItemListLoadSuccess(items));
+  	emit(ItemListLoadSuccess(items: items));
   }
 
 	Future createItem(UIItem item) => _dataService.createItem(Item.fromUIModel(item));
@@ -26,10 +28,15 @@ class ItemListCubit extends ReloadableCubit {
 		  var quantity = await _dataService.changeQuantity(item.id, quantityChange);
 		  var newList = List.of(state.items);
 		  newList[newList.indexOf(item)] = item.copyWith(quantity: quantity);
-		  emit(ItemListLoadSuccess(newList));
+		  emit(ItemListLoadSuccess(items: newList));
 	  } on BackendException catch(e) {
 	  	emit(state.copyWith(exception: e));
 	  }
+	}
+
+	void setNetworkOverride(bool override) {
+	  _connectivityService.override = override;
+	  emit((state as ItemListLoadSuccess).copyWith(overrideConnected: override));
 	}
 
 	Future removeItem(UIItem item) async {
@@ -37,7 +44,7 @@ class ItemListCubit extends ReloadableCubit {
 		try {
 		  await _dataService.removeItem(item.id);
 		  var newList = List.of(state.items)..remove(item);
-		  emit(ItemListLoadSuccess(newList));
+		  emit(ItemListLoadSuccess(items: newList));
 		} on BackendException catch(e) {
 			emit(state.copyWith(exception: e));
 		}
@@ -46,16 +53,18 @@ class ItemListCubit extends ReloadableCubit {
 
 class ItemListLoadSuccess extends DataLoadSuccess {
 	final List<UIItem> items;
+	final bool connectionOverride;
 	final BackendException exception;
 
-	ItemListLoadSuccess(this.items, [this.exception]);
-	ItemListLoadSuccess copyWith({List<UIItem> items, BackendException exception}) {
+	ItemListLoadSuccess({this.items, this.exception, this.connectionOverride = true});
+	ItemListLoadSuccess copyWith({List<UIItem> items, BackendException exception, bool overrideConnected}) {
 		return ItemListLoadSuccess(
-			items ?? this.items,
-			exception
+			items: items ?? this.items,
+			exception: exception,
+			connectionOverride: overrideConnected ?? this.connectionOverride
 		);
 	}
 
 	@override
-	List<Object> get props => [items, exception];
+	List<Object> get props => [items, exception, connectionOverride];
 }

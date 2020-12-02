@@ -38,7 +38,7 @@ class PanelPage extends StatelessWidget {
 					  );
 			  },
 			  child: LoadableBlocBuilder<ItemListCubit>(
-				  builder: (context, state) => _buildItemList((state as ItemListLoadSuccess).items, context)
+				  builder: (context, state) => _buildItemList(state as ItemListLoadSuccess, context)
 			  ),
 		  ),
 		  floatingActionButton: FloatingActionButton(
@@ -61,11 +61,17 @@ class PanelPage extends StatelessWidget {
 	  );
   }
 
-  Widget _buildItemList(List<UIItem> items, BuildContext context) {
+  Widget _buildItemList(ItemListLoadSuccess state, BuildContext context) {
   	return ListView(
 		  physics: BouncingScrollPhysics(),
 		  children: [
-		  	for (var item in items)
+		  	SwitchListTile(
+				  title: Text('Połączenie internetowe'),
+				  secondary: Icon(state.connectionOverride ? Icons.wifi : Icons.wifi_off),
+				  value: state.connectionOverride,
+				  onChanged: (val) => context.bloc<ItemListCubit>().setNetworkOverride(val)
+			  ),
+		  	for (var item in state.items)
 		  		Card(
 					  child: ListTile(
 						  title: Text('${item.manufacturer} ${item.model}', maxLines: 1, overflow: TextOverflow.ellipsis),

@@ -3,6 +3,7 @@ import 'package:warehouse_app/model/db/user.dart';
 
 abstract class DataService {
 	Future<List<Item>> fetchItems();
+
 	Future<int> changeQuantity(String id, int quantityChange);
 	Future editItem(Item item);
 

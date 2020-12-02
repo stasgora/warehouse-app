@@ -55,4 +55,3 @@ exports.remove = functions.https.onCall(async (data, context) => {
 	await itemRef.delete();
 	return {};
 });
-
