@@ -10,7 +10,6 @@ class StoredItems implements JsonConvertible {
 
 	@override
 	void fromJson(object) {
-		List<Map<String, dynamic>> json = object;
-		items..clear()..addEntries(json.map((map) => MapEntry(map['id'], Item.fromJson(map))));
+		items..clear()..addEntries((object as List).map((map) => MapEntry(map['id'], Item.fromJson(map))));
 	}
 }

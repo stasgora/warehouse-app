@@ -23,6 +23,7 @@ dependencies:
   formz: ^0.3.0
   path_provider: ^1.6.24
   connectivity: ^2.0.2
+  shared_preferences: ^0.5.12+4
 
   cupertino_icons: ^1.0.0
 

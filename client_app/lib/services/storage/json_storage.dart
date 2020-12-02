@@ -29,9 +29,7 @@ class JsonStorage<Model extends JsonConvertible> {
 			_read();
   }
 
-  Future<String> _read() async {
-		_model.fromJson(json.decode(await _storageService.read()));
-  }
+  Future _read() async => _model.fromJson(json.decode(await _storageService.read()));
 
   Future _write() => _storageService.write(json.encode(_model.toJson()));
 }

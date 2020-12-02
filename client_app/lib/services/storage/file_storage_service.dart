@@ -26,7 +26,7 @@ class FileStorageService extends StorageService {
   	var path = await _getLocalPath;
 	  _storageFile = File('$path/$identifier');
 	  if (await _storageFile.exists())
-	  	_storage = await read();
+	  	_storage = await _storageFile.readAsString();
   }
 
 	static Future<String> get _getLocalPath async => (await getApplicationDocumentsDirectory()).path;

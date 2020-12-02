@@ -16,7 +16,7 @@ class ItemListCubit extends ReloadableCubit {
   @override
   Future doLoadData() async {
   	var items = (await _dataService.fetchItems()).map((item) => UIItem.fromDBModel(item)).toList();
-  	emit(ItemListLoadSuccess(items: items));
+  	emit(ItemListLoadSuccess(items: items, connectionOverride: _connectivityService.override));
   }
 
 	Future createItem(UIItem item) => _dataService.createItem(Item.fromUIModel(item));
@@ -37,6 +37,7 @@ class ItemListCubit extends ReloadableCubit {
 	void setNetworkOverride(bool override) {
 	  _connectivityService.override = override;
 	  emit((state as ItemListLoadSuccess).copyWith(overrideConnected: override));
+	  doLoadData();
 	}
 
 	Future removeItem(UIItem item) async {
