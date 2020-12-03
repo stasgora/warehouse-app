@@ -17,7 +17,7 @@ class OfflineService implements DataService {
   Future editItem(Item item) => _storageService.execute((model) => model.items[item.id] = item);
 
   @override
-  Future<List<Item>> fetchItems() => Future.value(_storageService.model.items.values.toList());
+  Future<List<Item>> fetchItems() async => (await _storageService.model).items.values.toList();
 
   @override
   Future removeItem(String id) => _storageService.execute((model) => model.items.remove(id));

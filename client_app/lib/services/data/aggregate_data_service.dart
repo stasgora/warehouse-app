@@ -23,35 +23,29 @@ class AggregateDataService implements DataService {
 	}
 
   @override
-  Future<int> changeQuantity(String id, int quantityChange) async => executeUpdate((service) => service.changeQuantity(id, quantityChange));
+  Future<int> changeQuantity(String id, int quantityChange) async => _executeUpdate((service) => service.changeQuantity(id, quantityChange));
 
   @override
-  Future createItem(Item item) => executeUpdate((service) => service.createItem(item));
+  Future createItem(Item item) => _executeUpdate((service) => service.createItem(item));
 
   @override
-  Future editItem(Item item) => executeUpdate((service) => service.editItem(item));
+  Future editItem(Item item) => _executeUpdate((service) => service.editItem(item));
 
   @override
-  Future removeItem(String id) => executeUpdate((service) => service.removeItem(id));
+  Future removeItem(String id) => _executeUpdate((service) => service.removeItem(id));
+
+	Future<T> _executeUpdate<T>(Future Function(DataService) operation) async {
+		T value = await operation(_offline);
+		if (await _connectivityService.hasConnectivity())
+			value = await operation(_backend);
+		else
+			;// save
+		return value;
+	}
 
   @override
-  Future<User> getUser(String authId) async {
-	  if (await _connectivityService.hasConnectivity())
-			return _backend.getUser(authId);
-  }
+  Future<User> getUser(String authId) async => _backend.getUser(authId);
 
   @override
-  Future createUser(User user) async {
-	  if (await _connectivityService.hasConnectivity())
-	    return _backend.createUser(user);
-  }
-
-  Future<T> executeUpdate<T>(Future Function(DataService) operation) async {
-	  T value = await operation(_offline);
-	  if (await _connectivityService.hasConnectivity())
-		  value = await operation(_backend);
-	  else
-	    ;// save
-	  return value;
-  }
+  Future createUser(User user) async => _backend.createUser(user);
 }

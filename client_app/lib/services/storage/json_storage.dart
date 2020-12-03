@@ -9,14 +9,15 @@ class JsonStorage<Model extends JsonConvertible> {
 	final StorageService _storageService;
 	final Model _model;
 
-	Model get model => _model;
+	Future _initialized;
+	Future<Model> get model => _initialized.then((value) => _model);
 
 	JsonStorage(String identifier, this._model) : _storageService = FileStorageService(identifier) {
-		_initialize();
+		_initialized = _initialize();
 	}
 
-	Future<dynamic> execute(dynamic Function(Model) query) async {
-		var result = query(_model);
+	Future<T> execute<T>(T Function(Model) query) async {
+		T result = query(_model);
 		await _write();
 		return result;
 	}

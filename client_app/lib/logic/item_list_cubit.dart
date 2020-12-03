@@ -28,7 +28,7 @@ class ItemListCubit extends ReloadableCubit {
 		  var quantity = await _dataService.changeQuantity(item.id, quantityChange);
 		  var newList = List.of(state.items);
 		  newList[newList.indexOf(item)] = item.copyWith(quantity: quantity);
-		  emit(ItemListLoadSuccess(items: newList));
+		  emit(state.copyWith(items: newList));
 	  } on BackendException catch(e) {
 	  	emit(state.copyWith(exception: e));
 	  }
@@ -45,7 +45,7 @@ class ItemListCubit extends ReloadableCubit {
 		try {
 		  await _dataService.removeItem(item.id);
 		  var newList = List.of(state.items)..remove(item);
-		  emit(ItemListLoadSuccess(items: newList));
+		  emit(state.copyWith(items: newList));
 		} on BackendException catch(e) {
 			emit(state.copyWith(exception: e));
 		}
