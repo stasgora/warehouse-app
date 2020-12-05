@@ -1,6 +1,6 @@
 import 'package:warehouse_app/model/db/item.dart';
 
-import 'json_convertible.dart';
+import '../json_convertible.dart';
 
 class StoredItems implements JsonConvertible {
 	final Map<String, Item> items = {};

@@ -6,14 +6,14 @@ import 'package:get_it/get_it.dart';
 import 'package:warehouse_app/model/db/user.dart';
 import 'package:warehouse_app/services/auth/auth_provider.dart';
 import 'package:warehouse_app/services/auth/auth_user.dart';
-import 'package:warehouse_app/services/data/data_service.dart';
+import 'package:warehouse_app/services/api/interface/data_service.dart';
 
 part 'authentication_event.dart';
 part 'authentication_state.dart';
 
 class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
 	final AuthenticationProvider _authenticationProvider = GetIt.I<AuthenticationProvider>();
-	final DataService _dataService = GetIt.I<DataService>();
+	final ApiService _dataService = GetIt.I<ApiService>();
 
 	StreamSubscription<AuthenticatedUser> _userSubscription;
 

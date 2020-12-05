@@ -4,9 +4,9 @@ import 'package:warehouse_app/model/db/item.dart';
 import 'package:warehouse_app/model/db/user.dart';
 import 'package:warehouse_app/services/exceptions.dart';
 
-import 'data_service.dart';
+import 'interface/data_service.dart';
 
-class BackendService implements DataService {
+class BackendService implements ApiService {
 	var _api = CloudFunctions.instance.useFunctionsEmulator(origin: 'http://10.0.2.2:5521');
 	var _apiVersion = 1.0;
 

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:random_string/random_string.dart';
 
 import '../db/item.dart';
 
@@ -9,7 +10,7 @@ class UIItem extends Equatable {
 	final double price;
 	final int quantity;
 
-  UIItem({this.id, this.model, this.manufacturer, this.price, this.quantity = 0});
+  UIItem({String id, this.model, this.manufacturer, this.price, this.quantity = 0}) : id = id ?? randomString(10);
 	UIItem.fromDBModel(Item item) : this(id: item.id, model: item.model, manufacturer: item.manufacturer, price: item.price, quantity: item.quantity);
 	UIItem.from(UIItem item) : this(id: item.id, model: item.model, manufacturer: item.manufacturer, price: item.price, quantity: item.quantity);
 

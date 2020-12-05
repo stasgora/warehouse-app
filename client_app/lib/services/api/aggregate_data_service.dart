@@ -2,13 +2,17 @@ import 'package:get_it/get_it.dart';
 import 'package:warehouse_app/model/db/item.dart';
 import 'package:warehouse_app/model/db/user.dart';
 import 'package:warehouse_app/services/connectivity_service.dart';
-import 'package:warehouse_app/services/data/backend_service.dart';
-import 'package:warehouse_app/services/data/data_service.dart';
-import 'package:warehouse_app/services/data/offline_service.dart';
+import 'package:warehouse_app/services/api/backend_service.dart';
+import 'package:warehouse_app/services/api/interface/data_service.dart';
+import 'package:warehouse_app/services/api/offline_service.dart';
 
-class AggregateDataService implements DataService {
+import 'interface/item_api_service.dart';
+import 'operation_service.dart';
+
+class AggregateDataService implements ApiService {
 	final _backend = BackendService();
 	final _offline = OfflineService();
+	final _operations = OperationService();
 	final _connectivityService = GetIt.I<ConnectivityService>();
 
 	@override
@@ -34,12 +38,12 @@ class AggregateDataService implements DataService {
   @override
   Future removeItem(String id) => _executeUpdate((service) => service.removeItem(id));
 
-	Future<T> _executeUpdate<T>(Future Function(DataService) operation) async {
+	Future<T> _executeUpdate<T>(Future Function(ItemApiService) operation) async {
 		T value = await operation(_offline);
 		if (await _connectivityService.hasConnectivity())
 			value = await operation(_backend);
 		else
-			;// save
+			operation(_operations);
 		return value;
 	}
 

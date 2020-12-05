@@ -4,11 +4,11 @@ import 'package:warehouse_app/logic/reloadable/reloadable_cubit.dart';
 import 'package:warehouse_app/model/db/item.dart';
 import 'package:warehouse_app/model/ui/ui_item.dart';
 import 'package:warehouse_app/services/connectivity_service.dart';
-import 'package:warehouse_app/services/data/data_service.dart';
+import 'package:warehouse_app/services/api/interface/data_service.dart';
 import 'package:warehouse_app/services/exceptions.dart';
 
 class ItemListCubit extends ReloadableCubit {
-	final DataService _dataService = GetIt.I<DataService>();
+	final ApiService _dataService = GetIt.I<ApiService>();
 	final _connectivityService = GetIt.I<ConnectivityService>();
 
   ItemListCubit(ModalRoute<Object> modalRoute) : super(modalRoute);

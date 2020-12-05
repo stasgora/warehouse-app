@@ -1,10 +1,10 @@
 import 'package:warehouse_app/model/db/item.dart';
 import 'package:warehouse_app/model/db/user.dart';
-import 'package:warehouse_app/model/stored_items.dart';
-import 'package:warehouse_app/services/data/data_service.dart';
+import 'package:warehouse_app/model/offline/stored_items.dart';
+import 'package:warehouse_app/services/api/interface/data_service.dart';
 import 'package:warehouse_app/services/storage/json_storage.dart';
 
-class OfflineService implements DataService {
+class OfflineService implements ApiService {
 	final _storageService = JsonStorage('items.json', StoredItems());
 
   @override
