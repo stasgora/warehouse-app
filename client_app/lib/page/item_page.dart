@@ -75,13 +75,14 @@ class _ItemPageState extends State<ItemPage> {
 				  controller: _manufacturerController,
 				  onChanged: (val) => setState(() => _item = _item.copyWith(manufacturer: val))
 			  ),
-	      buildNumberField(
-		      context: context,
-		      title: 'Ilość',
-		      icon: Icons.dynamic_feed,
-		      controller: _quantityController,
-		      onChanged: (val) => setState(() => _item = _item.copyWith(quantity: val.isNotEmpty ? int.parse(val) : 0))
-	      ),
+	      if (widget.mode == AppFormType.create)
+		      buildNumberField(
+			      context: context,
+			      title: 'Ilość',
+			      icon: Icons.dynamic_feed,
+			      controller: _quantityController,
+			      onChanged: (val) => setState(() => _item = _item.copyWith(quantity: val.isNotEmpty ? int.parse(val) : 0))
+		      ),
 	      buildNumberField(
 		      context: context,
 		      title: 'Cena',

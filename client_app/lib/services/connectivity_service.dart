@@ -5,7 +5,7 @@ class ConnectivityService {
 	SharedPreferences _preferences;
 	static const String _PREF_KEY = 'overrideConnect';
 
-	bool _override;
+	bool _override = false;
 
 	bool get override => _override;
 
@@ -17,7 +17,7 @@ class ConnectivityService {
 	ConnectivityService() {
 		SharedPreferences.getInstance().then((value) {
 		  _preferences = value;
-		  _override = _preferences.getBool(_PREF_KEY);
+		  _override = _preferences.getBool(_PREF_KEY) ?? false;
 		});
 	}
 

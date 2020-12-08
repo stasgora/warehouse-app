@@ -29,8 +29,6 @@ class BackendService implements ApiService {
 	@override
 	Future createUser(User user) => _executeUser('create', {'user': user.toJson()});
 
-	Future syncOperations(List<Operation> operations) => _execute('synchronize', 'operations', {'ops': operations.map((e) => e.toJson()).toList()});
-
 	Future<dynamic> _executeItem(String function, [Map<String, dynamic> args]) => _execute(function, 'items', args);
 	Future<dynamic> _executeUser(String function, [Map<String, dynamic> args]) => _execute(function, 'users', args);
 

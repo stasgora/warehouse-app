@@ -41,7 +41,7 @@ exports.edit = functions.https.onCall(async (data, context) => {
 
 exports.create = functions.https.onCall(async (data, context) => {
 	utils.checkAuth(context);
-	delete data.id;
+	delete data.item.id;
 	await utils.getCollection('items').add(data.item);
 	return {};
 });

@@ -1,6 +1,10 @@
 import 'package:get_it/get_it.dart';
 import 'package:warehouse_app/model/db/item.dart';
 import 'package:warehouse_app/model/db/user.dart';
+import 'package:warehouse_app/model/offline/operation/change_quantity_operation.dart';
+import 'package:warehouse_app/model/offline/operation/delete_operation.dart';
+import 'package:warehouse_app/model/offline/operation/item_operation.dart';
+import 'package:warehouse_app/model/offline/operation/operation_type.dart';
 import 'package:warehouse_app/services/connectivity_service.dart';
 import 'package:warehouse_app/services/api/backend_service.dart';
 import 'package:warehouse_app/services/api/interface/data_service.dart';
@@ -19,13 +23,17 @@ class AggregateDataService implements ApiService {
 	Future<List<Item>> fetchItems() async {
 		List<Item> items;
 		if (await _connectivityService.hasConnectivity()) {
+			for (var op in await _operations.getOperations()) {
+				if (op is ItemOperation)
+					await (op.type == OperationType.edit ? _backend.editItem(op.item) : _backend.createItem(op.item));
+				else if (op is DeleteOperation)
+					await _backend.removeItem(op.id);
+				else if (op is ChangeQuantityOperation)
+					await _backend.changeQuantity(op.id, op.quantity);
+			}
+			await _operations.clearOperations();
 			items = await _backend.fetchItems();
 			_offline.refreshItems(items);
-			var opsToSync = await _operations.getOperations();
-			if (opsToSync.isNotEmpty) {
-				await _backend.syncOperations(opsToSync);
-				await _operations.clearOperations();
-			}
 		} else
 			items = await _offline.fetchItems();
 		return items;
