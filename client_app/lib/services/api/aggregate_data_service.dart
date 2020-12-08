@@ -21,6 +21,11 @@ class AggregateDataService implements ApiService {
 		if (await _connectivityService.hasConnectivity()) {
 			items = await _backend.fetchItems();
 			_offline.refreshItems(items);
+			var opsToSync = await _operations.getOperations();
+			if (opsToSync.isNotEmpty) {
+				await _backend.syncOperations(opsToSync);
+				await _operations.clearOperations();
+			}
 		} else
 			items = await _offline.fetchItems();
 		return items;

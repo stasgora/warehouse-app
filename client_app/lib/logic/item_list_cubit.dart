@@ -34,10 +34,11 @@ class ItemListCubit extends ReloadableCubit {
 	  }
 	}
 
-	void setNetworkOverride(bool override) {
+	void setNetworkOverride(bool override) async {
 	  _connectivityService.override = override;
 	  emit((state as ItemListLoadSuccess).copyWith(overrideConnected: override));
-	  doLoadData();
+	  if (await _connectivityService.hasConnectivity())
+	    doLoadData();
 	}
 
 	Future removeItem(UIItem item) async {

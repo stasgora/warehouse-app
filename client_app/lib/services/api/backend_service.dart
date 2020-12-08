@@ -2,6 +2,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/services.dart';
 import 'package:warehouse_app/model/db/item.dart';
 import 'package:warehouse_app/model/db/user.dart';
+import 'package:warehouse_app/model/offline/operation/operation.dart';
 import 'package:warehouse_app/services/exceptions.dart';
 
 import 'interface/data_service.dart';
@@ -27,6 +28,8 @@ class BackendService implements ApiService {
 	Future<User> getUser(String authId) async => User.fromJson((await _executeUser('get', {'authId': authId})));
 	@override
 	Future createUser(User user) => _executeUser('create', {'user': user.toJson()});
+
+	Future syncOperations(List<Operation> operations) => _execute('synchronize', 'operations', {'ops': operations.map((e) => e.toJson()).toList()});
 
 	Future<dynamic> _executeItem(String function, [Map<String, dynamic> args]) => _execute(function, 'items', args);
 	Future<dynamic> _executeUser(String function, [Map<String, dynamic> args]) => _execute(function, 'users', args);

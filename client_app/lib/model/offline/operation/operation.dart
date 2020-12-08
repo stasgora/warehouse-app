@@ -16,11 +16,11 @@ abstract class Operation {
   }
 
   factory Operation.typedFromJson(dynamic object) {
-		if (object['type'] == OperationType.edit.key || object['type'] == OperationType.create.key)
+		if (object['type'] == OperationType.edit.index || object['type'] == OperationType.create.index)
 			return ItemOperation.fromJson(object);
-		else if (object['type'] == OperationType.delete.key)
+		else if (object['type'] == OperationType.delete.index)
 			return DeleteOperation.fromJson(object);
-		else if (object['type'] == OperationType.changeQuantity.key)
+		else if (object['type'] == OperationType.changeQuantity.index)
 			return ChangeQuantityOperation.fromJson(object);
 		return null;
   }

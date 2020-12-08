@@ -28,4 +28,8 @@ class OperationService implements ItemApiService {
   Future removeItem(String id)  => _saveOperation(DeleteOperation(id));
 
   Future _saveOperation(Operation operation) => _operationService.execute((model) => model.operations.add(operation));
+
+	Future<List<Operation>> getOperations() async => (await _operationService.model).operations;
+
+	Future clearOperations() async => _operationService.execute((model) => model.operations.clear());
 }
