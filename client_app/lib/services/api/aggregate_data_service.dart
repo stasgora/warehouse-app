@@ -34,7 +34,7 @@ class AggregateDataService implements ApiService {
   Future<int> changeQuantity(String id, int quantityChange) async => _executeUpdate((service) => service.changeQuantity(id, quantityChange));
 
   @override
-  Future createItem(Item item) => _executeUpdate((service) => service.createItem(item));
+  Future<String> createItem(Item item) => _executeUpdate((service) => service.createItem(item));
 
   @override
   Future editItem(Item item) => _executeUpdate((service) => service.editItem(item));

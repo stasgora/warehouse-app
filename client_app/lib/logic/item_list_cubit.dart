@@ -11,6 +11,8 @@ import 'package:warehouse_app/services/api/interface/data_service.dart';
 import 'package:warehouse_app/services/exceptions.dart';
 
 class ItemListCubit extends ReloadableCubit {
+	static final Duration syncMessageDuration = Duration(seconds: 2);
+
 	final ApiService _dataService = GetIt.I<ApiService>();
 	final _operations = GetIt.I<OperationService>();
 	final _connectivityService = GetIt.I<ConnectivityService>();
@@ -22,28 +24,28 @@ class ItemListCubit extends ReloadableCubit {
   	var items = (await _dataService.fetchItems()).map((item) => UIItem.fromDBModel(item)).toList();
   	emit(ItemListLoadSuccess(items: items, connectionOverride: _connectivityService.override, syncStatus: syncStatus));
   	if (syncStatus != null) {
-		  Timer.periodic(Duration(seconds: 2), (timer) {
-			  syncStatus = List.from(syncStatus)..removeAt(0);
-			  emit((state as ItemListLoadSuccess).copyWith(syncStatus: List.from(syncStatus)));
-			  if (syncStatus.isEmpty)
-			  	timer.cancel();
-		  });
+  		while(syncStatus.isNotEmpty)
+			  await Future.delayed(syncMessageDuration, () {
+				  syncStatus = List.from(syncStatus)..removeAt(0);
+				  emit((state as ItemListLoadSuccess).copyWith(syncStatus: List.from(syncStatus)));
+			  });
 	  }
   }
 
 	Future createItem(UIItem item) => _dataService.createItem(Item.fromUIModel(item));
-	Future editItem(UIItem item) => _dataService.editItem(Item.fromUIModel(item));
+
+  Future editItem(UIItem item) {
+		return runGuarded(() async => await _dataService.editItem(Item.fromUIModel(item)));
+	}
 
 	Future changeItemQuantity(UIItem item, int quantityChange) async {
-		var state = this.state as ItemListLoadSuccess;
-	  try {
-		  var quantity = await _dataService.changeQuantity(item.id, quantityChange);
-		  var newList = List.of(state.items);
-		  newList[newList.indexOf(item)] = item.copyWith(quantity: quantity);
-		  emit(state.copyWith(items: newList));
-	  } on BackendException catch(e) {
-	  	emit(state.copyWith(exception: e));
-	  }
+		return runGuarded(() async {
+			var state = this.state as ItemListLoadSuccess;
+			var quantity = await _dataService.changeQuantity(item.id, quantityChange);
+			var newList = List.of(state.items);
+			newList[newList.indexOf(item)] = item.copyWith(quantity: quantity);
+			emit(state.copyWith(items: newList));
+		});
 	}
 
 	void setNetworkOverride(bool override) async {
@@ -56,13 +58,19 @@ class ItemListCubit extends ReloadableCubit {
 	}
 
 	Future removeItem(UIItem item) async {
-		var state = this.state as ItemListLoadSuccess;
+		return runGuarded(() async {
+			var state = this.state as ItemListLoadSuccess;
+			await _dataService.removeItem(item.id);
+			var newList = List.of(state.items)..remove(item);
+			emit(state.copyWith(items: newList));
+		});
+	}
+
+	Future runGuarded(Future Function() update) async {
 		try {
-		  await _dataService.removeItem(item.id);
-		  var newList = List.of(state.items)..remove(item);
-		  emit(state.copyWith(items: newList));
+			await update();
 		} on BackendException catch(e) {
-			emit(state.copyWith(exception: e));
+			emit((state as ItemListLoadSuccess).copyWith(exception: e));
 		}
 	}
 }

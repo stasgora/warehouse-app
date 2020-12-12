@@ -7,8 +7,6 @@ import 'package:warehouse_app/model/offline/operation/operation_type.dart';
 import 'package:warehouse_app/model/offline/stored_operations.dart';
 import 'package:warehouse_app/services/exceptions.dart';
 import 'package:warehouse_app/services/api/interface/item_api_service.dart';
-import 'package:warehouse_app/services/exceptions.dart';
-import 'package:warehouse_app/model/offline/operation/operation_type.dart';
 import 'package:warehouse_app/services/storage/json_storage.dart';
 
 import 'interface/data_service.dart';
@@ -26,10 +24,13 @@ class OperationService implements ItemApiService {
   }
 
   @override
-  Future createItem(Item item)  => _saveOperation(ItemOperation.create(item));
+  Future<String> createItem(Item item)  {
+    _saveOperation(ItemOperation.create(Item.from(item)));
+    return Future.value(item.id);
+  }
 
   @override
-  Future editItem(Item item)  => _saveOperation(ItemOperation.edit(item));
+  Future editItem(Item item)  => _saveOperation(ItemOperation.edit(Item.from(item)));
 
   @override
   Future removeItem(String id)  => _saveOperation(DeleteOperation(id));
@@ -38,11 +39,25 @@ class OperationService implements ItemApiService {
   
   Future<List<String>> synchronize() async {
 	  List<String> status = [];
-	  for (var op in (await _operationService.model).operations) {
+	  var operations = (await _operationService.model).operations;
+	  for (var op in operations) {
 		  try {
-			  if (op is ItemOperation)
-				  await (op.type == OperationType.edit ? dataService.editItem(op.item) : dataService.createItem(op.item));
-			  else if (op is DeleteOperation)
+			  if (op is ItemOperation) {
+			  	if (op.type == OperationType.edit)
+					  await dataService.editItem(op.item);
+			  	else {
+					  var oldId = op.item.id;
+					  var newId = await dataService.createItem(op.item);
+					  for (var nextOp in operations) {
+						  if (nextOp is ItemOperation && nextOp.item.id == oldId)
+						  	nextOp.item.id = newId;
+						  else if (nextOp is DeleteOperation && nextOp.id == oldId)
+							  nextOp.id = newId;
+						  else if (nextOp is ChangeQuantityOperation && nextOp.id == oldId)
+							  nextOp.id = newId;
+					  }
+				  }
+			  } else if (op is DeleteOperation)
 				  await dataService.removeItem(op.id);
 			  else if (op is ChangeQuantityOperation)
 				  await dataService.changeQuantity(op.id, op.quantity);

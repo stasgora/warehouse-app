@@ -50,7 +50,7 @@ class PanelPage extends StatelessWidget {
 
   void _showSnackBar(BuildContext context, String message) {
   	Scaffold.of(context)..hideCurrentSnackBar()..showSnackBar(
-		  SnackBar(content: Text(message)),
+		  SnackBar(content: Text(message), duration: ItemListCubit.syncMessageDuration),
 	  );
   }
 

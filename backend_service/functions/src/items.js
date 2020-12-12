@@ -21,7 +21,7 @@ exports.changeQuantity = functions.https.onCall(async (data, context) => {
 	let newQuantity;
 	await admin.firestore().runTransaction(async (t) => {
 		const item = await t.get(itemRef);
-		if (item.data().quantity + data.change <= 0)
+		if (item.data().quantity + data.change < 0)
 			throw new functions.https.HttpsError('resource-exhausted', 'There is not enough in stock');
 		newQuantity = item.data().quantity + data.change;
 		t.update(itemRef, {'quantity': newQuantity});
@@ -42,8 +42,8 @@ exports.edit = functions.https.onCall(async (data, context) => {
 exports.create = functions.https.onCall(async (data, context) => {
 	utils.checkAuth(context);
 	delete data.item.id;
-	await utils.getCollection('items').add(data.item);
-	return {};
+	var document = await utils.getCollection('items').add(data.item);
+	return document.id;
 });
 exports.remove = functions.https.onCall(async (data, context) => {
 	utils.checkAuth(context);

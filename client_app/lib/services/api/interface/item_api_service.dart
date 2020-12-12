@@ -4,6 +4,6 @@ abstract class ItemApiService {
 	Future<int> changeQuantity(String id, int quantityChange);
 	Future editItem(Item item);
 
-	Future createItem(Item item);
+	Future<String> createItem(Item item);
 	Future removeItem(String id);
 }

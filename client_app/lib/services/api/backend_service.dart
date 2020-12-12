@@ -19,7 +19,7 @@ class BackendService implements ApiService {
 	Future editItem(Item item) => _executeItem('edit', {'item': item.toJson()});
 
 	@override
-	Future createItem(Item item) => _executeItem('create', {'item': item.toJson()});
+	Future<String> createItem(Item item) async => item.id = await _executeItem('create', {'item': item.toJson()});
 	@override
 	Future removeItem(String id) => _executeItem('remove', {'id': id});
 

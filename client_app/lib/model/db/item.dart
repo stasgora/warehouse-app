@@ -9,6 +9,7 @@ class Item {
 
 	Item({this.id, this.model, this.manufacturer, this.price, this.quantity});
 	Item.fromUIModel(UIItem item) : this(id: item.id, model: item.model, manufacturer: item.manufacturer, price: item.price, quantity: item.quantity);
+	Item.from(Item item) : this(id: item.id, model: item.model, manufacturer: item.manufacturer, price: item.price, quantity: item.quantity);
 
 	factory Item.fromJson(Map<String, dynamic> json) {
 		return json != null ? Item(
