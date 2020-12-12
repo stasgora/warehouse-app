@@ -31,11 +31,11 @@ class PanelPage extends StatelessWidget {
 		  body: BlocListener<ItemListCubit, LoadableState>(
 			  listenWhen: (oldState, newState) => newState is ItemListLoadSuccess,
 			  listener: (context, state) {
-				  var error = (state as ItemListLoadSuccess).exception;
-				  if (error != null)
-					  Scaffold.of(context)..hideCurrentSnackBar()..showSnackBar(
-						  SnackBar(content: Text(error.description)),
-					  );
+				  ItemListLoadSuccess state2 = state;
+				  if (state2.exception != null)
+					  _showSnackBar(context, state2.exception.description);
+				  else if (state2.syncStatus != null && state2.syncStatus.isNotEmpty)
+					  _showSnackBar(context, state2.syncStatus[0]);
 			  },
 			  child: LoadableBlocBuilder<ItemListCubit>(
 				  builder: (context, state) => _buildItemList(state as ItemListLoadSuccess, context)
@@ -46,6 +46,12 @@ class PanelPage extends StatelessWidget {
 		    onPressed: () => pushItemPage(context),
 		  ),
     );
+  }
+
+  void _showSnackBar(BuildContext context, String message) {
+  	Scaffold.of(context)..hideCurrentSnackBar()..showSnackBar(
+		  SnackBar(content: Text(message)),
+	  );
   }
 
   void pushItemPage(BuildContext context, [UIItem item]) async {

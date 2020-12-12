@@ -1,14 +1,22 @@
+import 'package:get_it/get_it.dart';
 import 'package:warehouse_app/model/db/item.dart';
 import 'package:warehouse_app/model/db/user.dart';
 import 'package:warehouse_app/model/offline/stored_items.dart';
 import 'package:warehouse_app/services/api/interface/data_service.dart';
+import 'package:warehouse_app/services/connectivity_service.dart';
+import 'package:warehouse_app/services/exceptions.dart';
 import 'package:warehouse_app/services/storage/json_storage.dart';
 
 class OfflineService implements ApiService {
+	final _connectivityService = GetIt.I<ConnectivityService>();
 	final _storageService = JsonStorage('items.json', StoredItems());
 
   @override
-  Future<int> changeQuantity(String id, int quantityChange) => _storageService.execute((model) => model.items[id].quantity += quantityChange);
+  Future<int> changeQuantity(String id, int quantityChange) => _storageService.execute((model) {
+  	if (model.items[id].quantity + quantityChange < 0)
+  		throw BackendException.noItemInStock;
+    return model.items[id].quantity += quantityChange;
+  });
 
   @override
   Future createItem(Item item) => _storageService.execute((model) => model.items[item.id] = item);

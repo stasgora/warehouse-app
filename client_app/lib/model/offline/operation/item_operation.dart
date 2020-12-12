@@ -17,4 +17,7 @@ class ItemOperation extends Operation {
 		json['item'] = item.toJson();
 		return json;
   }
+
+	@override
+	String toString() => '${super.toString()} (${item.manufacturer} ${item.model})';
 }

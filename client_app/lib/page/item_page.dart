@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:warehouse_app/model/ui/app_page.dart';
 import 'package:warehouse_app/model/ui/ui_item.dart';
 import 'package:warehouse_app/widgets/form_fields.dart';
@@ -29,6 +28,7 @@ class _ItemPageState extends State<ItemPage> {
 	
 	@override
   void initState() {
+		super.initState();
 		_modelController.text = _item.model;
 		_manufacturerController.text = _item.manufacturer;
 		_quantityController.text = '${_item.quantity}';

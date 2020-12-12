@@ -2,7 +2,6 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/services.dart';
 import 'package:warehouse_app/model/db/item.dart';
 import 'package:warehouse_app/model/db/user.dart';
-import 'package:warehouse_app/model/offline/operation/operation.dart';
 import 'package:warehouse_app/services/exceptions.dart';
 
 import 'interface/data_service.dart';

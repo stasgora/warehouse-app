@@ -31,4 +31,7 @@ abstract class Operation {
 			'type': type.index
 		};
   }
+
+	@override
+  String toString() => type.name;
 }

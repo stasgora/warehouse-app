@@ -20,4 +20,7 @@ class ChangeQuantityOperation extends Operation {
 	  json['quantity'] = quantity;
 	  return json;
   }
+
+	@override
+  String toString() => '${super.toString()} ($quantity)';
 }
